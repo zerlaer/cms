@@ -1,5 +1,5 @@
 # 第一阶段：构建前端
-FROM registry.cn-hangzhou.aliyuncs.com/library/node:18-alpine AS frontend-builder
+FROM node:18-alpine AS frontend-builder
 
 # 设置国内镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -23,7 +23,7 @@ COPY frontend/ .
 RUN npm run build
 
 # 第二阶段：构建后端
-FROM registry.cn-hangzhou.aliyuncs.com/library/golang:1.21-alpine AS backend-builder
+FROM golang:1.21-alpine AS backend-builder
 
 # 设置国内镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -50,7 +50,7 @@ COPY backend/ .
 RUN go build -o cms .
 
 # 第三阶段：运行阶段
-FROM registry.cn-hangzhou.aliyuncs.com/library/alpine:3.18
+FROM alpine:3.18
 
 # 设置国内镜像源
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
