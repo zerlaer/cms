@@ -56,7 +56,7 @@ FROM alpine:3.18
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装运行依赖
-RUN apk add --no-cache tzdata nginx
+RUN apk add --no-cache tzdata nginx mysql-client
 
 # 设置时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -73,6 +73,7 @@ COPY --from=backend-builder /app/backend/cms /app/backend/
 COPY backend/config.yaml /app/backend/
 
 # 复制 nginx 配置文件
+COPY frontend/nginx-main.conf /etc/nginx/nginx.conf
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 暴露端口

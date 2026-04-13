@@ -1,6 +1,7 @@
 services:
   cms:
     container_name: cms
+    image: zerlaer/cms
     build:
       context: .
       dockerfile: Dockerfile
