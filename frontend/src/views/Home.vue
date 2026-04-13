@@ -4,24 +4,54 @@
     <el-header class="top-header">
       <div class="logo" @click="goToInventory" style="cursor: pointer">
         <div class="logo-icon">
-          <el-icon :size="28"><Cpu /></el-icon>
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <line x1="9" y1="1" x2="9" y2="4"></line>
+            <line x1="15" y1="1" x2="15" y2="4"></line>
+            <line x1="9" y1="20" x2="9" y2="23"></line>
+            <line x1="15" y1="20" x2="15" y2="23"></line>
+            <line x1="20" y1="9" x2="23" y2="9"></line>
+            <line x1="20" y1="14" x2="23" y2="14"></line>
+            <line x1="1" y1="9" x2="4" y2="9"></line>
+            <line x1="1" y1="14" x2="4" y2="14"></line>
+          </svg>
         </div>
         <span>电子元件仓库管理系统</span>
       </div>
       <div class="user-info">
-        <el-icon><UserFilled /></el-icon>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
         <span>{{ username }}</span>
         <el-button type="danger" size="small" @click="handleLogout">
-          <el-icon><SwitchFilled /></el-icon> 退出
+          退出
         </el-button>
       </div>
     </el-header>
 
     <div class="main-container">
+      <!-- 收起按钮 -->
+      <div class="toggle-btn-outer" :style="{ left: (isCollapse ? '56px' : '208px') }" @click="toggleSidebar">
+        <svg v-if="!isCollapse" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="17" y1="10" x2="3" y2="10"></line>
+          <line x1="21" y1="6" x2="3" y2="6"></line>
+          <line x1="21" y1="14" x2="3" y2="14"></line>
+          <line x1="17" y1="18" x2="3" y2="18"></line>
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="21" y1="10" x2="7" y2="10"></line>
+          <line x1="21" y1="6" x2="3" y2="6"></line>
+          <line x1="21" y1="14" x2="3" y2="14"></line>
+          <line x1="21" y1="18" x2="7" y2="18"></line>
+        </svg>
+      </div>
       <!-- 左侧边栏 -->
-      <el-aside class="sidebar" width="220px">
+      <el-aside class="sidebar" :width="isCollapse ? '64px' : '220px'">
         <el-menu
           :default-active="activeMenu"
+          :collapse="isCollapse"
           background-color="#304156"
           text-color="#bfcbd9"
           active-text-color="#409EFF"
@@ -29,47 +59,71 @@
         >
           <el-sub-menu index="1">
             <template #title>
-              <el-icon><Grid /></el-icon>
-              <span>元件管理</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+              </svg>
+              <span>统计报表</span>
             </template>
-            <el-menu-item index="1-1">全部元件</el-menu-item>
-
-            <el-menu-item index="1-3">有库存</el-menu-item>
-            <el-menu-item index="1-4">库存不足</el-menu-item>
-            <el-menu-item index="1-5">无库存</el-menu-item>
+            <el-menu-item index="1-1">库存统计</el-menu-item>
           </el-sub-menu>
           
           <el-sub-menu index="2">
             <template #title>
-              <el-icon><DataAnalysis /></el-icon>
-              <span>导入导出</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="3" y1="9" x2="21" y2="9"></line>
+                <line x1="9" y1="21" x2="9" y2="9"></line>
+              </svg>
+              <span>元件管理</span>
             </template>
-            <el-menu-item index="2-1" @click="handleExport">
-              <el-icon><DownloadFilled /></el-icon> 导出 Excel
-            </el-menu-item>
-            <el-menu-item index="2-2" @click="importDialogVisible = true">
-              <el-icon><UploadFilled /></el-icon> 导入 Excel
-            </el-menu-item>
+            <el-menu-item index="2-1">全部元件</el-menu-item>
+            <el-menu-item index="2-2">有库存</el-menu-item>
+            <el-menu-item index="2-3">库存不足</el-menu-item>
+            <el-menu-item index="2-4">无库存</el-menu-item>
           </el-sub-menu>
           
           <el-sub-menu index="3">
             <template #title>
-              <el-icon><PieChart /></el-icon>
-              <span>统计报表</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>导入导出</span>
             </template>
-            <el-menu-item index="3-1">库存统计</el-menu-item>
+            <el-menu-item index="3-1" @click="importDialogVisible = true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg> 导入 Excel
+            </el-menu-item>
+            <el-menu-item index="3-2" @click="handleExport">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg> 导出 Excel
+            </el-menu-item>
           </el-sub-menu>
           
           <el-sub-menu index="4">
             <template #title>
-              <el-icon><UserFilled /></el-icon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
               <span>用户管理</span>
             </template>
             <el-menu-item index="4-1">用户列表</el-menu-item>
           </el-sub-menu>
           
           <el-menu-item index="5">
-            <el-icon><Setting /></el-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
             <span>系统设置</span>
           </el-menu-item>
         </el-menu>
@@ -228,7 +282,12 @@ const username = ref(localStorage.getItem('username') || 'Admin')
 const componentListRef = ref(null)
 
 const activeMenu = ref('1-1')
-const currentView = ref('components')
+const currentView = ref('inventory')
+const isCollapse = ref(false)
+
+const toggleSidebar = () => {
+  isCollapse.value = !isCollapse.value
+}
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -432,24 +491,23 @@ const handleFileChange = (file) => {
 
 const handleMenuSelect = (index) => {
   const viewMap = {
-    '1-1': 'components',
-    '1-2': 'components',
-    '1-3': 'components',
-    '1-4': 'components',
-    '1-5': 'components',
+    '1-1': 'inventory',
     '2-1': 'components',
     '2-2': 'components',
-    '3-1': 'inventory',
+    '2-3': 'components',
+    '2-4': 'components',
+    '3-1': 'components',
+    '3-2': 'components',
     '4-1': 'users',
     '5': 'settings'
   }
   
   // 菜单对应的筛选条件
   const filterMap = {
-    '1-1': '',  // 全部元件
-    '1-3': 'hasStock',  // 有库存
-    '1-4': 'lowStock',  // 库存不足
-    '1-5': 'noStock'  // 无库存
+    '2-1': '',  // 全部元件
+    '2-2': 'hasStock',  // 有库存
+    '2-3': 'lowStock',  // 库存不足
+    '2-4': 'noStock'  // 无库存
   }
   
   currentView.value = viewMap[index] || 'components'
@@ -472,13 +530,13 @@ const handleMenuSelect = (index) => {
 // 跳转到库存统计
 const goToInventory = () => {
   currentView.value = 'inventory'
-  activeMenu.value = '3-1'
+  activeMenu.value = '1-1'
   filterType.value = ''
 }
 
 const handleAdd = () => {
   currentView.value = 'components'
-  activeMenu.value = '1-1'
+  activeMenu.value = '2-1'
   dialogTitle.value = '新增元件'
   form.value = {
     id: null,
@@ -673,12 +731,35 @@ onMounted(() => {
 .main-container {
   display: flex;
   height: calc(100vh - 60px);
+  position: relative;
 }
 
 .sidebar {
   background-color: #304156;
   overflow-y: auto;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s ease;
+}
+
+.toggle-btn-outer {
+  position: absolute;
+  top: 6px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #304156;
+  background-color: transparent;
+  border: none;
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 46px;
+  line-height: 46px;
+}
+
+.toggle-btn-outer:hover {
+  color: #409EFF;
 }
 
 .sidebar .el-menu {

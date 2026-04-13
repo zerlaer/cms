@@ -1,6 +1,5 @@
 # Go
 backend/vendor/
-backend/go.sum
 backend/*.exe
 backend/*.test
 backend/*.out

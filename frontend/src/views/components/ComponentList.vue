@@ -11,10 +11,18 @@
           class="search-input"
         >
           <template #prefix>
-            <el-icon><SearchFilled /></el-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#606266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
           </template>
         </el-input>
         <el-select v-model="filterType" placeholder="库存筛选" clearable style="width: 150px" @change="handleFilterChange">
+          <template #prefix>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#606266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </template>
           <el-option label="全部" value="" />
           <el-option label="有库存" value="hasStock" />
           <el-option label="库存不足" value="lowStock" />
@@ -23,7 +31,10 @@
       </div>
       <div class="action-box">
         <el-button type="primary" @click="$emit('add')" class="add-btn">
-          <el-icon><PlusFilled /></el-icon>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
           新增元件
         </el-button>
       </div>
@@ -64,18 +75,12 @@
       </el-table-column>
       <el-table-column prop="price" label="总价" width="80" :resizable="true" align="center">
         <template #default="{ row }">
-          <div class="price-container">
-            <el-icon size="14"><Currency /></el-icon>
-            <span class="price">{{ row.price.toFixed(2) }}</span>
-          </div>
+          <span class="price">{{ row.price.toFixed(2) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="单价" width="80" :resizable="true" align="center">
         <template #default="{ row }">
-          <div class="price-container">
-            <el-icon size="14"><Currency /></el-icon>
-            <span class="price">{{ (row.quantity > 0 ? row.price / row.quantity : 0).toFixed(2) }}</span>
-          </div>
+          <span class="price">{{ (row.quantity > 0 ? row.price / row.quantity : 0).toFixed(2) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180" fixed="right" align="center">
@@ -362,9 +367,7 @@ watch(() => props.tableData, (newData) => {
 .price-container {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  justify-content: center;
-  vertical-align: middle;
+  gap: 2px;
 }
 
 :deep(.el-table .el-table__cell) {
@@ -392,8 +395,8 @@ watch(() => props.tableData, (newData) => {
 }
 
 .price {
-  color: #f56c6c;
-  font-weight: 600;
+  color: #303133;
+  font-weight: normal;
   font-size: 12px;
 }
 

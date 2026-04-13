@@ -4,9 +4,11 @@ go 1.21
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/spf13/viper v1.18.2
 	github.com/xuri/excelize/v2 v2.8.0
 	go.uber.org/zap v1.26.0
+	golang.org/x/crypto v0.16.0
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5
 )
@@ -50,7 +52,6 @@ require (
 	github.com/xuri/nfp v0.0.0-20230819163627-dc951e3ffe1a // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect

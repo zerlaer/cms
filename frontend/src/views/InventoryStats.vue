@@ -6,7 +6,11 @@
         <el-card class="stat-card" shadow="hover" @click.native="handleStatClick('all')" style="cursor: pointer">
           <div class="stat-content">
             <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
-              <el-icon :size="32"><Box /></el-icon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
             </div>
             <div class="stat-info">
               <div class="stat-value">{{ totalComponents }}</div>
@@ -20,7 +24,10 @@
         <el-card class="stat-card" shadow="hover" @click.native="handleStatClick('hasStock')" style="cursor: pointer">
           <div class="stat-content">
             <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
-              <el-icon :size="32"><CircleCheckFilled /></el-icon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
             </div>
             <div class="stat-info">
               <div class="stat-value">{{ inStockCount }}</div>
@@ -34,7 +41,11 @@
         <el-card class="stat-card" shadow="hover" @click.native="handleStatClick('lowStock')" style="cursor: pointer">
           <div class="stat-content">
             <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
-              <el-icon :size="32"><Warning /></el-icon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
             </div>
             <div class="stat-info">
               <div class="stat-value">{{ lowStockCount }}</div>
@@ -48,7 +59,11 @@
         <el-card class="stat-card" shadow="hover" @click.native="handleStatClick('noStock')" style="cursor: pointer">
           <div class="stat-content">
             <div class="stat-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)">
-              <el-icon :size="32"><CircleCloseFilled /></el-icon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
             </div>
             <div class="stat-info">
               <div class="stat-value">{{ noStockCount }}</div>
@@ -106,32 +121,47 @@
             @input="handleSearch"
           >
             <template #prefix>
-              <el-icon><SearchFilled /></el-icon>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#606266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </template>
           </el-input>
         </div>
       </template>
 
-      <el-table :data="tableData" style="width: 100%" v-loading="loading" stripe>
-        <el-table-column prop="productCode" label="商品编号" width="120" />
-        <el-table-column prop="brand" label="品牌" width="100" />
-        <el-table-column prop="name" label="商品名称" min-width="150" />
-        <el-table-column prop="currentStock" label="当前库存" width="100">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading" stripe border :cell-style="{ padding: '5px 0' }" :header-cell-style="{ padding: '8px 0' }">
+        <el-table-column type="index" label="序号" width="60" align="center" />
+        <el-table-column prop="productCode" label="编号" min-width="100" align="center" />
+        <el-table-column prop="source" label="渠道" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="row.currentStock > 50 ? 'success' : row.currentStock > 0 ? 'warning' : 'danger'">
-              {{ row.currentStock }}
+            <el-tag :type="row.source === 'LCSC' ? 'success' : 'primary'" size="small">
+              {{ row.source === 'LCSC' ? '立创商城' : '淘宝' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="quantity" label="订购数量" width="100" />
-        <el-table-column prop="price" label="单价" width="100">
+        <el-table-column prop="brand" label="品牌" min-width="80" align="center" />
+        <el-table-column prop="model" label="型号" min-width="120" align="center" />
+        <el-table-column prop="package" label="封装" min-width="80" align="center" />
+        <el-table-column prop="name" label="商品" show-overflow-tooltip min-width="200" align="center" />
+        <el-table-column prop="quantity" label="数量" width="80" align="center" />
+        <el-table-column prop="currentStock" label="库存" width="130" align="center">
+          <template #default="{ row }">
+            <div class="stock-highlight">
+              <el-tag :type="row.currentStock > 50 ? 'success' : row.currentStock > 0 ? 'warning' : 'danger'" size="large">
+                {{ row.currentStock }}
+              </el-tag>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="price" label="总价" width="110" align="center">
           <template #default="{ row }">
             ¥{{ row.price.toFixed(2) }}
           </template>
         </el-table-column>
-        <el-table-column prop="totalValue" label="总价值" width="100">
+        <el-table-column label="单价" width="110" align="center">
           <template #default="{ row }">
-            ¥{{ (row.price * row.currentStock).toFixed(2) }}
+            ¥{{ (row.quantity > 0 ? row.price / row.quantity : 0).toFixed(2) }}
           </template>
         </el-table-column>
       </el-table>
@@ -292,7 +322,8 @@ onMounted(() => {
 
 <style scoped>
 .inventory-stats {
-  padding: 20px;
+  padding: 15px;
+  width: 100%;
 }
 
 .stat-card {
@@ -382,5 +413,27 @@ onMounted(() => {
 
 :deep(.el-table td) {
   color: #303133 !important;
+}
+
+.stock-highlight {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:deep(.stock-highlight .el-tag) {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 6px 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+:deep(.el-card) {
+  width: 100%;
+}
+
+:deep(.el-card__body) {
+  padding: 15px;
 }
 </style>

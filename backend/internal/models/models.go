@@ -37,3 +37,18 @@ func (Component) TableName() string {
 func (StockRecord) TableName() string {
 	return "stockRecords"
 }
+
+type User struct {
+	ID        uint      `gorm:"column:id;primarykey" json:"id"`
+	Username  string    `gorm:"column:username;size:50;uniqueIndex;not null;comment:用户名" json:"username"`
+	Password  string    `gorm:"column:password;size:255;not null;comment:密码" json:"-"`
+	Email     string    `gorm:"column:email;size:100;comment:邮箱" json:"email"`
+	Role      string    `gorm:"column:role;size:20;default:'user';comment:角色：admin/user" json:"role"`
+	Status    int       `gorm:"column:status;default:1;comment:状态：1启用，0禁用" json:"status"`
+	CreatedAt time.Time `gorm:"column:createdAt" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"column:updatedAt" json:"updatedAt"`
+}
+
+func (User) TableName() string {
+	return "users"
+}

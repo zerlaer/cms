@@ -8,6 +8,7 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
 	Log      LogConfig      `mapstructure:"log"`
+	JWT      JWTConfig      `mapstructure:"jwt"`
 }
 
 type ServerConfig struct {
@@ -16,14 +17,14 @@ type ServerConfig struct {
 }
 
 type DatabaseConfig struct {
-	Driver      string `mapstructure:"driver"`
-	Host        string `mapstructure:"host"`
-	Port        int    `mapstructure:"port"`
-	User        string `mapstructure:"user"`
-	Password    string `mapstructure:"password"`
-	DBName      string `mapstructure:"dbname"`
-	MaxIdleConns int   `mapstructure:"maxIdleConns"`
-	MaxOpenConns int   `mapstructure:"maxOpenConns"`
+	Driver       string `mapstructure:"driver"`
+	Host         string `mapstructure:"host"`
+	Port         int    `mapstructure:"port"`
+	User         string `mapstructure:"user"`
+	Password     string `mapstructure:"password"`
+	DBName       string `mapstructure:"dbname"`
+	MaxIdleConns int    `mapstructure:"maxIdleConns"`
+	MaxOpenConns int    `mapstructure:"maxOpenConns"`
 }
 
 type LogConfig struct {
@@ -33,6 +34,10 @@ type LogConfig struct {
 	MaxBackups int    `mapstructure:"maxBackups"`
 	MaxAge     int    `mapstructure:"maxAge"`
 	Compress   bool   `mapstructure:"compress"`
+}
+
+type JWTConfig struct {
+	Secret string `mapstructure:"secret"`
 }
 
 var GlobalConfig *Config

@@ -22,11 +22,11 @@ func Logger(logger *zap.Logger) gin.HandlerFunc {
 		if path != "/health" {
 			if status >= 400 {
 				// 错误请求详细记录
-				logger.Error(fmt.Sprintf("请求错误，状态码：%d，方法：%s，路径：%s，IP：%s，耗时：%v",
+				logger.Error(fmt.Sprintf("Request error, status: %d, method: %s, path: %s, IP: %s, duration: %v",
 					status, c.Request.Method, path, c.ClientIP(), cost))
 			} else {
 				// 正常请求简洁记录
-				logger.Info(fmt.Sprintf("请求，状态码：%d，方法：%s，路径：%s，耗时：%v",
+				logger.Info(fmt.Sprintf("Request, status: %d, method: %s, path: %s, duration: %v",
 					status, c.Request.Method, path, cost))
 			}
 		}
