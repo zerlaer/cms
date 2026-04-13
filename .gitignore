@@ -1,0 +1,33 @@
+# Go
+backend/vendor/
+backend/go.sum
+backend/*.exe
+backend/*.test
+backend/*.out
+
+# Logs
+backend/logs/
+*.log
+
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (optional)
+backend/config.yaml
