@@ -115,6 +115,9 @@ func main() {
 	}
 
 	r.Static("/uploads", "./uploads")
+	r.NoRoute(func(c *gin.Context) {
+		c.Status(404)
+	})
 
 	port := fmt.Sprintf(":%d", cfg.Server.Port)
 	logger.Info("Server started, port" + port)
