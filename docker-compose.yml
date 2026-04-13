@@ -16,17 +16,24 @@ services:
     depends_on:
       - mysql
     restart: always
+    networks:
+      - app-network
 
   mysql:
-    image: mysql:8.0
+    image: hub.baidubce.com/library/mysql:8.0
     ports:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=mima41
       - MYSQL_DATABASE=cms
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./data:/var/lib/mysql
     restart: always
+    networks:
+      - app-network
 
-volumes:
-  mysql-data:
+
+
+networks:
+  app-network:
+    external: true
