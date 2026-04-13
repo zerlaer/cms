@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  mode: release
+
+database:
+  driver: mysql
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: mima41
+  dbname: cms
+  maxIdleConns: 10
+  maxOpenConns: 100
+
+log:
+  level: debug
+  filename: backend/logs/app.log
+  maxSize: 100
+  maxBackups: 5
+  maxAge: 30
+  compress: false

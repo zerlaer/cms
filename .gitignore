@@ -29,5 +29,4 @@ frontend/.env.local
 .DS_Store
 Thumbs.db
 
-# Config (optional)
-backend/config.yaml
+
