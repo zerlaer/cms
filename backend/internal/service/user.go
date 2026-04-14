@@ -4,7 +4,6 @@ import (
 	"cms/internal/models"
 	"errors"
 
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +28,7 @@ func (s *UserService) Login(username, password string) (*models.User, error) {
 		return nil, errors.New("account is disabled")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if user.Password != password {
 		return nil, errors.New("invalid username or password")
 	}
 
@@ -43,11 +42,6 @@ func (s *UserService) GetList() ([]models.User, error) {
 }
 
 func (s *UserService) Create(user *models.User) error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	user.Password = string(hashedPassword)
 	return s.db.Create(user).Error
 }
 
@@ -60,11 +54,7 @@ func (s *UserService) Update(user *models.User) error {
 	}
 
 	if user.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return err
-		}
-		updates["password"] = string(hashedPassword)
+		updates["password"] = user.Password
 	}
 
 	return s.db.Model(user).Updates(updates).Error
@@ -80,16 +70,11 @@ func (s *UserService) ChangePassword(id uint, currentPassword, newPassword strin
 		return errors.New("user not found")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(currentPassword)); err != nil {
+	if user.Password != currentPassword {
 		return errors.New("current password is incorrect")
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-
-	return s.db.Model(&user).Update("password", string(hashedPassword)).Error
+	return s.db.Model(&user).Update("password", newPassword).Error
 }
 
 func (s *UserService) InitDefaultUser() error {
@@ -99,13 +84,9 @@ func (s *UserService) InitDefaultUser() error {
 		return nil
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
 	defaultUser := &models.User{
 		Username: "admin",
-		Password: string(hashedPassword),
+		Password: "123456",
 		Email:    "admin@example.com",
 		Role:     "admin",
 		Status:   1,
