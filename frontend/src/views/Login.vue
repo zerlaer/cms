@@ -115,31 +115,33 @@ const loginRules = {
 
 const loginFormRef = ref(null)
 
-const handleLogin = async () => {
+const handleLogin = () => {
   if (!loginFormRef.value) return
   
-  await loginFormRef.value.validate(async (valid) => {
+  loginFormRef.value.validate((valid) => {
     if (valid) {
       loading.value = true
       
-      try {
-        const res = await login(loginForm.value)
-        localStorage.setItem('token', res.token)
-        localStorage.setItem('isLoggedIn', 'true')
-        localStorage.setItem('username', res.user.username)
-        localStorage.setItem('userInfo', JSON.stringify(res.user))
-        
-        ElMessage.success('登录成功')
-        
-        setTimeout(() => {
-          router.push('/')
-        }, 500)
-      } catch (error) {
-        console.error('Login error:', error)
-        // 错误已经在request拦截器中处理
-      } finally {
-        loading.value = false
-      }
+      login(loginForm.value)
+        .then(res => {
+          localStorage.setItem('token', res.token)
+          localStorage.setItem('isLoggedIn', 'true')
+          localStorage.setItem('username', res.user.username)
+          localStorage.setItem('userInfo', JSON.stringify(res.user))
+          
+          ElMessage.success('登录成功')
+          
+          setTimeout(() => {
+            router.push('/')
+          }, 500)
+        })
+        .catch(error => {
+          console.error('Login error:', error)
+          // 错误已经在request拦截器中处理
+        })
+        .finally(() => {
+          loading.value = false
+        })
     }
   })
 }
