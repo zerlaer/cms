@@ -6,6 +6,7 @@
         <el-input
           v-model="localSearchQuery"
           @input="handleSearchInput"
+          @keyup.enter="handleSearchInput"
           placeholder="搜索商品名称、编号、品牌"
           clearable
           class="search-input"
@@ -175,8 +176,15 @@ const extractPackageOptions = (data) => {
 }
 
 const handleSearchInput = (value) => {
-  localSearchQuery.value = value
-  emit('search', filterType.value, '')
+  // 检查是否为KeyboardEvent对象
+  if (value && value.type === 'keyup') {
+    // 忽略事件对象，直接使用localSearchQuery.value
+    emit('search', filterType.value, localSearchQuery.value)
+  } else {
+    // 正常处理输入值
+    localSearchQuery.value = value
+    emit('search', filterType.value, value)
+  }
 }
 
 const handleFilterChange = () => {

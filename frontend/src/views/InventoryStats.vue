@@ -50,20 +50,44 @@
       </el-col>
     </el-row>
 
-    <!-- 库存分类统计 -->
+    <!-- 库存状态统计和入库出库记录 -->
     <el-row :gutter="20" style="margin-top: 20px">
-      <el-col :span="24">
+      <el-col :span="12">
         <el-card>
           <template #header>
-            <span>库存分类统计</span>
+            <span style="display: block; text-align: center; font-weight: bold;">库存状态统计</span>
           </template>
-          <div class="chart-container" style="height: 400px">
-            <el-chart :option="chartOption" />
-          </div>
+          <div ref="chartRef" class="chart-container" style="height: 350px"></div>
         </el-card>
       </el-col>
+      <el-col :span="12">
+        <el-card>
+          <template #header>
+            <span style="display: block; text-align: center; font-weight: bold;">入库出库记录</span>
+          </template>
+          <div ref="stockChartRef" class="chart-container" style="height: 350px"></div>
+        </el-card>
+      </el-col>
+    </el-row>
 
-
+    <!-- 更多数据可视化图表 -->
+    <el-row :gutter="20" style="margin-top: 20px">
+      <el-col :span="12">
+        <el-card>
+          <template #header>
+            <span style="display: block; text-align: center; font-weight: bold;">品牌分布</span>
+          </template>
+          <div ref="brandChartRef" class="chart-container" style="height: 350px"></div>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card>
+          <template #header>
+            <span style="display: block; text-align: center; font-weight: bold;">封装类型分布</span>
+          </template>
+          <div ref="packageChartRef" class="chart-container" style="height: 350px"></div>
+        </el-card>
+      </el-col>
     </el-row>
 
     <!-- 库存明细表格 -->
@@ -77,6 +101,7 @@
             clearable
             style="width: 300px"
             @input="handleSearch"
+            @keyup.enter="handleSearch"
           >
             <template #prefix>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#606266" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -130,15 +155,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { getComponents } from '@/api/component'
 import { useRouter } from 'vue-router'
-import { PieChart } from 'echarts'
+import * as echarts from 'echarts'
 
 const router = useRouter()
 const loading = ref(false)
 const tableData = ref([])
 const searchQuery = ref('')
+const chartRef = ref(null)
+let chart = null
+const stockChartRef = ref(null)
+let stockChart = null
+const brandChartRef = ref(null)
+let brandChart = null
+const packageChartRef = ref(null)
+let packageChart = null
 
 // 统计数据
 const totalComponents = ref(0)
@@ -150,31 +183,282 @@ const noStockCount = ref(0)
 // 图表数据
 const chartOption = ref({
   title: {
-    text: '库存分类统计',
-    left: 'center'
+    show: false
   },
   tooltip: {
     trigger: 'item',
     formatter: '{a} <br/>{b}: {c} ({d}%)'
   },
   legend: {
-    orient: 'vertical',
-    left: 'left',
+    type: 'scroll',
+    orient: 'horizontal',
+    bottom: '0%',
     data: []
   },
   series: [
     {
-      name: '库存分类',
+      name: '库存状态',
       type: 'pie',
-      radius: '50%',
-      center: ['50%', '60%'],
+      radius: ['40%', '70%'],
+      center: ['50%', '50%'],
       data: [],
+      padAngle: 5,
       emphasis: {
         itemStyle: {
           shadowBlur: 10,
           shadowOffsetX: 0,
           shadowColor: 'rgba(0, 0, 0, 0.5)'
+        },
+        label: {
+          show: true,
+          fontSize: 18,
+          fontWeight: 'bold'
         }
+      },
+      label: {
+        show: true,
+        formatter: '{b}: {c} ({d}%)'
+      },
+      labelLine: {
+        show: true
+      },
+      itemStyle: {
+        borderColor: '#fff',
+        borderWidth: 2,
+        borderRadius: 5,
+        borderType: 'solid'
+      }
+    }
+  ]
+})
+
+// 入库出库记录图表数据
+const stockChartOption = ref({
+  title: {
+    show: false
+  },
+  tooltip: {
+    trigger: 'axis'
+  },
+  legend: {
+    data: ['入库', '出库'],
+    bottom: '0%',
+    textStyle: {
+      fontSize: 12
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '15%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    data: [],
+    axisLabel: {
+      fontSize: 12,
+      rotate: 45
+    }
+  },
+  yAxis: {
+    type: 'value',
+    axisLabel: {
+      fontSize: 12
+    }
+  },
+  series: [
+    {
+      name: '入库',
+      type: 'line',
+      data: [],
+      smooth: true,
+      itemStyle: {
+        color: '#67c23a'
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: 'rgba(103, 194, 58, 0.5)'
+          }, {
+            offset: 1, color: 'rgba(103, 194, 58, 0.1)'
+          }]
+        }
+      }
+    },
+    {
+      name: '出库',
+      type: 'line',
+      data: [],
+      smooth: true,
+      itemStyle: {
+        color: '#f56c6c'
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: 'rgba(245, 108, 108, 0.5)'
+          }, {
+            offset: 1, color: 'rgba(245, 108, 108, 0.1)'
+          }]
+        }
+      }
+    }
+  ]
+})
+
+// 品牌分布图表数据
+const brandChartOption = ref({
+  title: {
+    show: false
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  legend: {
+    show: false
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'value',
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    splitLine: {
+      show: false
+    },
+    axisLabel: {
+      show: true,
+      fontSize: 12
+    }
+  },
+  yAxis: {
+    type: 'category',
+    data: [],
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      show: true,
+      fontSize: 12,
+      rotate: 30
+    }
+  },
+  series: [
+    {
+      name: '元件数量',
+      type: 'bar',
+      data: [],
+      itemStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+          { offset: 0, color: '#83bff6' },
+          { offset: 0.5, color: '#188df0' },
+          { offset: 1, color: '#188df0' }
+        ])
+      },
+      label: {
+        show: true,
+        position: 'right',
+        formatter: '{c}',
+        fontSize: 12
+      }
+    }
+  ]
+})
+
+// 封装类型分布图表数据
+const packageChartOption = ref({
+  title: {
+    show: false
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  legend: {
+    show: false
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: {
+    type: 'value',
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    splitLine: {
+      show: false
+    },
+    axisLabel: {
+      show: true,
+      fontSize: 12
+    }
+  },
+  yAxis: {
+    type: 'category',
+    data: [],
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      show: true,
+      fontSize: 12,
+      rotate: 30
+    }
+  },
+  series: [
+    {
+      name: '元件数量',
+      type: 'bar',
+      data: [],
+      itemStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+          { offset: 0, color: '#fccb05' },
+          { offset: 0.5, color: '#f56c6c' },
+          { offset: 1, color: '#f56c6c' }
+        ])
+      },
+      label: {
+        show: true,
+        position: 'right',
+        formatter: '{c}',
+        fontSize: 12
       }
     }
   ]
@@ -221,7 +505,20 @@ const loadData = async () => {
   try {
     // 获取所有元件数据
     const res = await getComponents({ page: 1, pageSize: 1000 })
-    tableData.value = res.data || []
+    let data = res.data || []
+    
+    // 根据搜索关键词过滤数据
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      data = data.filter(item => 
+        item.name.toLowerCase().includes(query) || 
+        item.productCode.toLowerCase().includes(query) ||
+        item.brand.toLowerCase().includes(query) ||
+        item.model.toLowerCase().includes(query)
+      )
+    }
+    
+    tableData.value = data
     
     // 计算统计数据
     calculateStats()
@@ -243,8 +540,8 @@ const calculateStats = () => {
   // 有库存元件数量
   inStockCount.value = data.filter(item => item.currentStock > 0).length
   
-  // 库存不足（少于 50）
-  lowStockCount.value = data.filter(item => item.currentStock > 0 && item.currentStock < 50).length
+  // 库存不足（少于 10）
+  lowStockCount.value = data.filter(item => item.currentStock > 0 && item.currentStock < 10).length
   
   // 无库存
   noStockCount.value = data.filter(item => item.currentStock === 0).length
@@ -252,9 +549,121 @@ const calculateStats = () => {
   // 更新分类统计
   updateCategoryStats()
   
+  // 更新图表
+  nextTick(() => {
+    updateChart()
+    updateStockChart()
+    updateBrandChart()
+    updatePackageChart()
+  })
+  
   // 更新最近入库记录（这里用最后添加的元件模拟）
   updateRecentStockIn()
 }
+
+// 初始化图表
+const initChart = () => {
+  if (chartRef.value) {
+    chart = echarts.init(chartRef.value)
+    updateChart()
+  }
+  if (stockChartRef.value) {
+    stockChart = echarts.init(stockChartRef.value)
+    updateStockChart()
+  }
+  if (brandChartRef.value) {
+    brandChart = echarts.init(brandChartRef.value)
+    updateBrandChart()
+  }
+  if (packageChartRef.value) {
+    packageChart = echarts.init(packageChartRef.value)
+    updatePackageChart()
+  }
+}
+
+// 更新图表
+const updateChart = () => {
+  if (chart) {
+    chart.setOption(chartOption.value)
+  }
+}
+
+// 更新入库出库记录图表
+const updateStockChart = () => {
+  if (stockChart) {
+    stockChart.setOption(stockChartOption.value)
+  }
+}
+
+// 更新品牌分布图表
+const updateBrandChart = () => {
+  const data = tableData.value
+  
+  // 统计每个品牌的元件数量
+  const brandCountMap = {}
+  data.forEach(item => {
+    const brand = item.brand || '其他'
+    if (!brandCountMap[brand]) {
+      brandCountMap[brand] = 0
+    }
+    brandCountMap[brand]++
+  })
+  
+  // 转换为图表数据并排序（取前10个）
+  const brandData = Object.entries(brandCountMap)
+    .map(([brand, count]) => ({ brand, count }))
+    .sort((a, b) => {
+      // 首韩品牌始终排在第一位
+      if (a.brand === '首韩') return -1
+      if (b.brand === '首韩') return 1
+      // 其他品牌按数量从多到少排序
+      return b.count - a.count
+    })
+    .slice(0, 10)
+    // 反转数据顺序，实现旋转180度效果
+    .reverse()
+  
+  // 更新图表数据
+  brandChartOption.value.yAxis.data = brandData.map(item => item.brand)
+  brandChartOption.value.series[0].data = brandData.map(item => item.count)
+  
+  if (brandChart) {
+    brandChart.setOption(brandChartOption.value)
+  }
+}
+
+// 更新封装类型分布图表
+const updatePackageChart = () => {
+  const data = tableData.value
+  
+  // 统计每个封装类型的元件数量
+  const packageCountMap = {}
+  data.forEach(item => {
+    const packageType = item.package || '其他'
+    if (!packageCountMap[packageType]) {
+      packageCountMap[packageType] = 0
+    }
+    packageCountMap[packageType]++
+  })
+  
+  // 转换为图表数据并排序（取前10个）
+  const packageData = Object.entries(packageCountMap)
+    .map(([packageType, count]) => ({ packageType, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+    // 反转数据顺序，实现旋转180度效果
+    .reverse()
+  
+  // 更新图表数据
+  packageChartOption.value.yAxis.data = packageData.map(item => item.packageType)
+  packageChartOption.value.series[0].data = packageData.map(item => item.count)
+  
+  if (packageChart) {
+    packageChart.setOption(packageChartOption.value)
+  }
+}
+
+
 
 const updateCategoryStats = () => {
   const data = tableData.value
@@ -265,6 +674,10 @@ const updateCategoryStats = () => {
       stat.value = 0
       stat.percentage = 0
     })
+    // 更新库存状态统计
+    inStockCount.value = 0
+    lowStockCount.value = 0
+    noStockCount.value = 0
     return
   }
   
@@ -285,6 +698,11 @@ const updateCategoryStats = () => {
     '放大器/开发板': 0,
     '工具/仪器仪表/耗材': 0
   }
+  
+  // 库存状态统计
+  let inStock = 0
+  let lowStock = 0
+  let noStock = 0
   
   data.forEach(item => {
     const name = item.name.toLowerCase()
@@ -367,7 +785,21 @@ const updateCategoryStats = () => {
     else {
       categories['电容/电阻/电感']++
     }
+    
+    // 库存状态统计
+    if (item.currentStock > 0 && item.currentStock >= 10) {
+      inStock++
+    } else if (item.currentStock > 0 && item.currentStock < 10) {
+      lowStock++
+    } else {
+      noStock++
+    }
   })
+  
+  // 更新库存状态统计
+  inStockCount.value = inStock
+  lowStockCount.value = lowStock
+  noStockCount.value = noStock
   
   // 更新分类统计数据
   categoryStats.value.forEach((stat, index) => {
@@ -375,6 +807,41 @@ const updateCategoryStats = () => {
     stat.value = categories[label]
     stat.percentage = parseFloat(((categories[label] / total) * 100).toFixed(1))
   })
+  
+  // 对分类数据进行排序（从高到低）
+  categoryStats.value.sort((a, b) => b.value - a.value)
+  
+  // 更新库存状态图表数据
+  const chartData = [
+    { value: inStock, name: '有库存', itemStyle: { color: '#67c23a' } },
+    { value: lowStock, name: '库存不足', itemStyle: { color: '#e6a23c' } },
+    { value: noStock, name: '无库存', itemStyle: { color: '#f56c6c' } }
+  ]
+  
+  const legendData = ['有库存', '库存不足', '无库存']
+  
+  chartOption.value.series[0].data = chartData
+  chartOption.value.legend.data = legendData
+  
+  // 模拟入库出库记录数据（最近7天）
+  const dates = []
+  const inStockData = []
+  const outStockData = []
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date()
+    date.setDate(date.getDate() - i)
+    dates.push(`${date.getMonth() + 1}/${date.getDate()}`)
+    inStockData.push(Math.floor(Math.random() * 10) + 1)
+    outStockData.push(Math.floor(Math.random() * 8) + 1)
+  }
+  
+  stockChartOption.value.xAxis.data = dates
+  stockChartOption.value.series[0].data = inStockData
+  stockChartOption.value.series[1].data = outStockData
+  
+  // 更新入库出库记录图表
+  updateStockChart()
 }
 
 const updateRecentStockIn = () => {
@@ -388,12 +855,16 @@ const updateRecentStockIn = () => {
   }))
 }
 
-const handleSearch = () => {
+const handleSearch = (event) => {
+  // 忽略事件对象，只调用loadData函数
   loadData()
 }
 
 onMounted(() => {
   loadData()
+  nextTick(() => {
+    initChart()
+  })
 })
 </script>
 
@@ -443,31 +914,45 @@ onMounted(() => {
 
 .chart-container {
   padding: 10px;
+  height: 100%;
 }
 
-.stat-item {
-  margin-bottom: 20px;
-  transition: all 0.3s ease;
-}
-
-.stat-item:last-child {
-  margin-bottom: 0;
-}
-
-.stat-item-header {
+.status-stats {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.stat-item-label {
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background-color: #f5f7fa;
+  border-radius: 8px;
+}
+
+.status-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.status-info {
+  flex: 1;
+}
+
+.status-label {
   font-size: 14px;
   color: #606266;
-  font-weight: 500;
+  margin-bottom: 5px;
 }
 
-.stat-item-value {
-  font-size: 14px;
+.status-value {
+  font-size: 20px;
   font-weight: bold;
   color: #303133;
 }
