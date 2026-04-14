@@ -136,6 +136,7 @@ const handleLogin = async () => {
         }, 500)
       } catch (error) {
         console.error('Login error:', error)
+        // 错误已经在request拦截器中处理
       } finally {
         loading.value = false
       }

@@ -816,7 +816,8 @@ const submitImport = async () => {
       componentListRef.value.loadData()
     }
   } catch (error) {
-    ElMessage.error('导入失败：' + (error.response?.data?.error || error.message || '未知错误'))
+    // 错误已经在request拦截器中处理
+    console.error('Import error:', error)
   }
 }
 
