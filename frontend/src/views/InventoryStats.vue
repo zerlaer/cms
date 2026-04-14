@@ -501,6 +501,14 @@ const handleStatClick = (type) => {
 }
 
 const loadData = async () => {
+  // 检查登录状态
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
+  if (!isLoggedIn) {
+    // 未登录，跳转到登录页面
+    router.push('/login')
+    return
+  }
+  
   loading.value = true
   try {
     // 获取所有元件数据
@@ -523,6 +531,8 @@ const loadData = async () => {
     // 计算统计数据
     calculateStats()
   } catch (error) {
+    // 错误已经在request拦截器中处理
+    console.error('Load data error:', error)
   } finally {
     loading.value = false
   }

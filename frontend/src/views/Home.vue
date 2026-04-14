@@ -391,6 +391,14 @@ const tableFilters = ref({}) // 表格列筛选条件
 
 // 加载数据
 const loadData = async () => {
+  // 检查登录状态
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
+  if (!isLoggedIn) {
+    // 未登录，跳转到登录页面
+    router.push('/login')
+    return
+  }
+  
   loading.value = true
   try {
     // 当有筛选条件时，请求所有数据以便在前端进行筛选
@@ -459,7 +467,8 @@ const loadData = async () => {
       componentListRef.value.extractPackageOptions(allData)
     }
   } catch (error) {
-    ElMessage.error('加载数据失败')
+    // 错误已经在request拦截器中处理
+    console.error('Load data error:', error)
   } finally {
     loading.value = false
   }

@@ -78,9 +78,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { getStockRecords } from '@/api/component'
 import { Refresh, Search } from '@element-plus/icons-vue'
+
+const router = useRouter()
 
 const loading = ref(false)
 const records = ref([])
@@ -97,6 +100,14 @@ const searchForm = ref({
 })
 
 const loadData = async () => {
+  // 检查登录状态
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
+  if (!isLoggedIn) {
+    // 未登录，跳转到登录页面
+    router.push('/login')
+    return
+  }
+  
   loading.value = true
   try {
     const params = {
@@ -115,7 +126,8 @@ const loadData = async () => {
     records.value = res.data || []
     total.value = res.total || 0
   } catch (error) {
-    ElMessage.error('加载记录失败')
+    // 错误已经在request拦截器中处理
+    console.error('Load records error:', error)
   } finally {
     loading.value = false
   }
