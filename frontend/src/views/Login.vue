@@ -18,7 +18,7 @@
                     </svg>
                   </div>
                 </div>
-        <h1>电子件管理系统</h1>
+        <h1>电子元件管理系统</h1>
         <p>Component Management System</p>
       </div>
       

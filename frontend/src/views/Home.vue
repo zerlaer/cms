@@ -12,7 +12,7 @@
           </svg>
         </el-button>
         <div class="logo" @click="goToInventory" style="cursor: pointer">
-          <span>电子件管理系统</span>
+          <span>电子元件管理系统</span>
         </div>
       </div>
       <div class="user-info">
