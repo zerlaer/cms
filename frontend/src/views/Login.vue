@@ -18,8 +18,8 @@
                     </svg>
                   </div>
                 </div>
-        <h1>电子元件仓库管理系统</h1>
-        <p>Electronic Component Warehouse Management System</p>
+        <h1>电子件管理系统</h1>
+        <p>Component Management System</p>
       </div>
       
       <el-form

@@ -3,6 +3,7 @@ package service
 import (
 	"cms/internal/models"
 	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -109,4 +110,64 @@ func (s *ComponentService) GetStockRecords(componentID uint) ([]models.StockReco
 	var records []models.StockRecord
 	err := s.db.Where("componentId = ?", componentID).Order("createdAt DESC").Find(&records).Error
 	return records, err
+}
+
+func (s *ComponentService) GetAllStockRecords(page, pageSize int, recordType, componentName, startDate, endDate string) ([]map[string]interface{}, int64, error) {
+	type RecordWithComponent struct {
+		models.StockRecord
+		ComponentName  string `gorm:"column:componentName"`
+		ComponentModel string `gorm:"column:componentModel"`
+	}
+
+	var records []RecordWithComponent
+	var total int64
+
+	offset := (page - 1) * pageSize
+
+	// 构建查询
+	query := s.db.Model(&models.StockRecord{}).Joins("JOIN components ON stockRecords.componentId = components.id")
+
+	// 应用筛选条件
+	if recordType != "" {
+		query = query.Where("stockRecords.type = ?", recordType)
+	}
+
+	if componentName != "" {
+		query = query.Where("components.name LIKE ?", "%"+componentName+"%")
+	}
+
+	if startDate != "" {
+		query = query.Where("stockRecords.createdAt >= ?", startDate)
+	}
+
+	if endDate != "" {
+		query = query.Where("stockRecords.createdAt <= ?", endDate)
+	}
+
+	// 计算总数
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 执行查询
+	if err := query.Select("stockRecords.*, components.name as componentName, components.model as componentModel").Offset(offset).Limit(pageSize).Order("stockRecords.createdAt DESC").Find(&records).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 转换为带元件信息的记录
+	result := make([]map[string]interface{}, len(records))
+	for i, record := range records {
+		result[i] = map[string]interface{}{
+			"id":             record.ID,
+			"componentId":    record.ComponentID,
+			"componentName":  record.ComponentName,
+			"componentModel": record.ComponentModel,
+			"type":           record.Type,
+			"quantity":       record.Quantity,
+			"remark":         record.Remark,
+			"createdAt":      record.CreatedAt,
+		}
+	}
+
+	return result, total, nil
 }

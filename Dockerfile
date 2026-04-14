@@ -79,6 +79,10 @@ COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 # 暴露端口
 EXPOSE 80 8080
 
+# 添加健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/api/components || exit 1
+
 # 启动脚本
 COPY start.sh /app/
 RUN chmod +x /app/start.sh

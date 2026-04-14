@@ -30,7 +30,7 @@
         </el-select>
       </div>
       <div class="action-box">
-        <el-button type="primary" @click="$emit('add')" class="add-btn">
+        <el-button type="primary" @click="$emit('add')" class="add-btn" :loading="buttonLoading.add">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -41,17 +41,18 @@
     </div>
 
     <!-- 数据表格 -->
-    <el-table 
-      :data="tableData" 
-      style="width: 100%" 
-      v-loading="loading" 
-      stripe
-      border
-      :cell-style="{ padding: '5px 0' }"
-      :header-cell-style="{ padding: '8px 0' }"
-      :fit="true"
-      @filter-change="handleTableFilterChange"
-    >
+    <div class="table-container">
+      <el-table 
+        :data="tableData" 
+        style="width: 100%" 
+        v-loading="loading" 
+        stripe
+        border
+        :cell-style="{ padding: '5px 0' }"
+        :header-cell-style="{ padding: '8px 0' }"
+        :fit="true"
+        @filter-change="handleTableFilterChange"
+      >
       <el-table-column type="index" label="序号" width="60" align="center" :index="indexMethod" />
       <el-table-column prop="productCode" column-key="productCode" label="编号" width="120" :resizable="true" :filters="[{ text: 'C开头', value: 'C' }]" :filter-multiple="false" align="center" />
       <el-table-column prop="source" column-key="source" label="渠道" width="100" :resizable="true" :filters="[{ text: '立创商城', value: 'LCSC' }, { text: '淘宝', value: 'TB' }]" :filter-multiple="true" align="center">
@@ -99,7 +100,8 @@
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
+      </el-table>
+    </div>
 
     <!-- 分页 -->
     <div class="pagination-container">
@@ -155,6 +157,9 @@ const localSearchQuery = ref('')
 const filterType = ref('')
 const packageOptions = ref([])
 const brandOptions = ref([])
+const buttonLoading = ref({
+  add: false
+})
 
 const loadData = async () => {
   // 由父组件处理数据加载
@@ -216,7 +221,8 @@ watch(() => props.tableData, (newData) => {
 defineExpose({
   loadData,
   extractPackageOptions,
-  filterType
+  filterType,
+  buttonLoading
 })
 
 onMounted(() => {
@@ -295,12 +301,16 @@ watch(() => props.tableData, (newData) => {
   box-shadow: 0 0 0 1px #409eff inset;
 }
 
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 :deep(.el-table) {
   font-size: 12px;
   border-radius: 4px;
   overflow: hidden;
-  width: 100% !important;
-  min-width: 100% !important;
+  min-width: 1000px;
 }
 
 :deep(.el-table__header-wrapper),
@@ -437,5 +447,112 @@ watch(() => props.tableData, (newData) => {
 :deep(.el-button--small.is-link) {
   padding: 4px 2px;
   font-size: 12px;
+}
+
+/* 下拉菜单按钮样式 */
+:deep(.el-select) {
+  background: transparent !important;
+}
+
+:deep(.el-select .el-input__wrapper) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+:deep(.el-select .el-input__inner) {
+  background: transparent !important;
+  border: 1px solid #dcdfe6 !important;
+}
+
+/* 移动端响应式设计 */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .filter-box {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
+  
+  .action-box {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+  
+  .add-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .table-container {
+    margin: 0 -10px;
+    border-radius: 0;
+  }
+  
+  :deep(.el-table) {
+    font-size: 11px;
+  }
+  
+  :deep(.el-table__row) {
+    height: 40px;
+  }
+  
+  :deep(.el-table th) {
+    font-size: 11px;
+    padding: 6px 0 !important;
+  }
+  
+  :deep(.el-table td) {
+    padding: 4px 0 !important;
+  }
+  
+  .pagination-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  :deep(.el-pagination) {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  :deep(.el-pagination .el-pager li) {
+    min-width: 26px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 11px;
+  }
+  
+  :deep(.el-pagination .el-select .el-input) {
+    width: 80px;
+  }
+  
+  :deep(.el-button--small) {
+    padding: 3px 5px;
+    font-size: 11px;
+  }
+  
+  /* 在移动端隐藏部分列 */
+  :deep(.el-table-column[prop="brand"]),
+  :deep(.el-table-column[prop="model"]),
+  :deep(.el-table-column[prop="package"]),
+  :deep(.el-table-column[prop="category"]) {
+    display: none;
+  }
+  
+  /* 调整操作列宽度 */
+  :deep(.el-table-column:last-child) {
+    width: 140px !important;
+  }
 }
 </style>

@@ -86,7 +86,7 @@ const screenResolution = ref('')
 const osInfo = ref('')
 
 const basicSettings = ref({
-  systemName: '电子元件仓库管理系统',
+  systemName: '电子件管理系统',
   companyName: '示例公司',
   contact: '张三',
   phone: '13800138000',

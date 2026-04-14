@@ -54,10 +54,11 @@ export const stockOut = (id, data) => {
   })
 }
 
-export const getStockRecords = (id) => {
+export const getStockRecords = (params) => {
   return request({
-    url: `/components/${id}/records`,
-    method: 'get'
+    url: '/stock-records',
+    method: 'get',
+    params
   })
 }
 

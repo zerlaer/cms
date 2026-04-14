@@ -64,6 +64,7 @@ func main() {
 	componentService := service.NewComponentService(db)
 	excelService := service.NewExcelService(db)
 	userService := service.NewUserService(db)
+	bomService := service.NewBOMService(db)
 
 	if err := userService.InitDefaultUser(); err != nil {
 		logger.Error("Failed to init default user", zap.Error(err))
@@ -72,15 +73,23 @@ func main() {
 	componentHandler := handlers.NewComponentHandler(componentService)
 	excelHandler := handlers.NewExcelHandler(excelService)
 	userHandler := handlers.NewUserHandler(userService)
+	bomHandler := handlers.NewBOMHandler(bomService)
+
+	// 设置日志器
+	handlers.SetLogger(logger)
 
 	gin.SetMode(cfg.Server.Mode)
 	r := gin.New()
 	r.Use(middleware.Logger(logger))
 	r.Use(middleware.CORS())
 
+	// 限流中间件
+	rateLimiter := middleware.NewRateLimiter(10, time.Minute) // 每分钟10个请求
+
 	api := r.Group("/api")
 	{
-		api.POST("/auth/login", userHandler.Login)
+		// 登录接口添加限流保护
+		api.POST("/auth/login", rateLimiter.Limit(), userHandler.Login)
 
 		protected := api.Group("")
 		protected.Use(middleware.AuthMiddleware())
@@ -103,7 +112,19 @@ func main() {
 				excel.POST("/import", excelHandler.Import)
 			}
 
+			// BOM 路由
+			bom := protected.Group("/bom")
+			{
+				bom.POST("/import", bomHandler.ImportBOM)
+				bom.POST("/batch-stock-out", bomHandler.BatchStockOut)
+				bom.POST("/export", bomHandler.ExportBOM)
+			}
+
+			// 库存记录路由
+			protected.GET("/stock-records", componentHandler.GetAllStockRecords)
+
 			users := protected.Group("/users")
+			users.Use(middleware.RoleMiddleware("admin")) // 只允许admin角色访问
 			{
 				users.GET("", userHandler.GetList)
 				users.POST("", userHandler.Create)
@@ -115,6 +136,7 @@ func main() {
 	}
 
 	r.Static("/uploads", "./uploads")
+	r.Static("/temp", "./temp")
 	r.NoRoute(func(c *gin.Context) {
 		c.Status(404)
 	})

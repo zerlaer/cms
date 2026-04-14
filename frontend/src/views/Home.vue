@@ -2,22 +2,18 @@
   <div class="layout">
     <!-- 顶部导航栏 -->
     <el-header class="top-header">
-      <div class="logo" @click="goToInventory" style="cursor: pointer">
-        <div class="logo-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
-            <rect x="9" y="9" width="6" height="6"></rect>
-            <line x1="9" y1="1" x2="9" y2="4"></line>
-            <line x1="15" y1="1" x2="15" y2="4"></line>
-            <line x1="9" y1="20" x2="9" y2="23"></line>
-            <line x1="15" y1="20" x2="15" y2="23"></line>
-            <line x1="20" y1="9" x2="23" y2="9"></line>
-            <line x1="20" y1="14" x2="23" y2="14"></line>
-            <line x1="1" y1="9" x2="4" y2="9"></line>
-            <line x1="1" y1="14" x2="4" y2="14"></line>
+      <div class="header-left">
+        <!-- 菜单按钮 -->
+        <el-button @click="menuDrawerVisible = true" class="menu-btn" style="background: transparent; border: none; padding: 8px; color: white;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
           </svg>
+        </el-button>
+        <div class="logo" @click="goToInventory" style="cursor: pointer">
+          <span>电子件管理系统</span>
         </div>
-        <span>电子元件仓库管理系统</span>
       </div>
       <div class="user-info">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
@@ -31,56 +27,85 @@
       </div>
     </el-header>
 
-    <div class="main-container">
-      <!-- 收起按钮 -->
-      <div class="toggle-btn-outer" :style="{ left: (isCollapse ? '56px' : '208px') }" @click="toggleSidebar">
-        <svg v-if="!isCollapse" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="17" y1="10" x2="3" y2="10"></line>
-          <line x1="21" y1="6" x2="3" y2="6"></line>
-          <line x1="21" y1="14" x2="3" y2="14"></line>
-          <line x1="17" y1="18" x2="3" y2="18"></line>
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="21" y1="10" x2="7" y2="10"></line>
-          <line x1="21" y1="6" x2="3" y2="6"></line>
-          <line x1="21" y1="14" x2="3" y2="14"></line>
-          <line x1="21" y1="18" x2="7" y2="18"></line>
-        </svg>
-      </div>
-      <!-- 左侧边栏 -->
-      <el-aside class="sidebar" :width="isCollapse ? '64px' : '220px'">
-        <el-menu
-          :default-active="activeMenu"
-          :collapse="isCollapse"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          active-text-color="#409EFF"
-          @select="handleMenuSelect"
-        >
+    <!-- 菜单抽屉 -->
+    <el-drawer
+      v-model="menuDrawerVisible"
+      title=""
+      direction="ltr"
+      size="250px"
+    >
+      <template #title>
+        <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
+            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <line x1="9" y1="1" x2="9" y2="4"></line>
+            <line x1="15" y1="1" x2="15" y2="4"></line>
+            <line x1="9" y1="20" x2="9" y2="23"></line>
+            <line x1="15" y1="20" x2="15" y2="23"></line>
+            <line x1="20" y1="9" x2="23" y2="9"></line>
+            <line x1="20" y1="14" x2="23" y2="14"></line>
+            <line x1="1" y1="9" x2="4" y2="9"></line>
+            <line x1="1" y1="14" x2="4" y2="14"></line>
+          </svg>
+        </div>
+      </template>
+      <el-menu
+        :default-active="activeMenu"
+        background-color="#304156"
+        text-color="#bfcbd9"
+        active-text-color="#409EFF"
+        @select="handleMenuSelect"
+      >
           <el-sub-menu index="1">
             <template #title>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                <path d="M3 3v18h18"></path>
+                <path d="M19 9H5"></path>
+                <path d="M16 19H5"></path>
+                <path d="M12 14H5"></path>
               </svg>
               <span>统计报表</span>
             </template>
-            <el-menu-item index="1-1">库存统计</el-menu-item>
+            <el-menu-item index="1-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <path d="M3 3v18h18"></path>
+                <path d="M19 9H5"></path>
+                <path d="M16 19H5"></path>
+                <path d="M12 14H5"></path>
+              </svg> 库存统计
+            </el-menu-item>
           </el-sub-menu>
           
           <el-sub-menu index="2">
             <template #title>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="3" y1="9" x2="21" y2="9"></line>
-                <line x1="9" y1="21" x2="9" y2="9"></line>
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
               </svg>
               <span>元件管理</span>
             </template>
-            <el-menu-item index="2-1">全部元件</el-menu-item>
-            <el-menu-item index="2-2">有库存</el-menu-item>
-            <el-menu-item index="2-3">库存不足</el-menu-item>
-            <el-menu-item index="2-4">无库存</el-menu-item>
+            <el-menu-item index="2-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg> 全部元件
+            </el-menu-item>
+            <el-menu-item index="2-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg> 有库存
+            </el-menu-item>
+            <el-menu-item index="2-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg> 库存不足
+            </el-menu-item>
+            <el-menu-item index="2-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg> 无库存
+            </el-menu-item>
           </el-sub-menu>
           
           <el-sub-menu index="3">
@@ -108,6 +133,22 @@
             </el-menu-item>
           </el-sub-menu>
           
+          <el-menu-item index="6" @click="handleBOMMatch">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg> BOM匹配
+          </el-menu-item>
+          
+          <el-menu-item index="7" @click="handleStockRecords">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg> 入库出库
+          </el-menu-item>
+          
           <el-sub-menu index="4">
             <template #title>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
@@ -116,21 +157,25 @@
               </svg>
               <span>用户管理</span>
             </template>
-            <el-menu-item index="4-1">用户列表</el-menu-item>
+            <el-menu-item index="4-1">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg> 用户列表
+            </el-menu-item>
           </el-sub-menu>
           
           <el-menu-item index="5">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-            <span>系统设置</span>
+            </svg> 系统设置
           </el-menu-item>
         </el-menu>
-      </el-aside>
+    </el-drawer>
 
-      <!-- 主内容区 -->
-      <el-main class="main-content">
+    <!-- 主内容区 -->
+    <el-main class="main-content">
         <!-- 元件列表 -->
         <component-list 
           v-if="currentView === 'components'"
@@ -152,6 +197,9 @@
           @table-filter="handleTableFilter"
         />
         
+        <!-- BOM匹配 -->
+        <BOMMatch v-else-if="currentView === 'bom'" />
+        
         <!-- 用户管理 -->
         <user-management v-else-if="currentView === 'users'" />
         
@@ -160,8 +208,10 @@
         
         <!-- 系统设置 -->
         <system-settings v-else-if="currentView === 'settings'" />
+        
+        <!-- 入库出库记录 -->
+        <stock-records v-else-if="currentView === 'stockRecords'" />
       </el-main>
-    </div>
 
     <!-- 新增/编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
@@ -259,22 +309,16 @@
 import { ref, onMounted, defineAsyncComponent, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import {
-  getComponents,
-  createComponent,
-  updateComponent,
-  deleteComponent,
-  stockIn,
-  stockOut,
-  exportExcel,
-  importExcel
-} from '@/api/component'
+import { getComponents, createComponent, updateComponent, deleteComponent, stockIn, stockOut, importExcel } from '@/api/component'
+import * as XLSX from 'xlsx'
 
 // 异步加载组件
 const ComponentList = defineAsyncComponent(() => import('./components/ComponentList.vue'))
 const UserManagement = defineAsyncComponent(() => import('./UserManagement.vue'))
 const InventoryStats = defineAsyncComponent(() => import('./InventoryStats.vue'))
 const SystemSettings = defineAsyncComponent(() => import('./Settings.vue'))
+const BOMMatch = defineAsyncComponent(() => import('./BOMMatch.vue'))
+const StockRecords = defineAsyncComponent(() => import('./StockRecords.vue'))
 
 const router = useRouter()
 const route = useRoute()
@@ -282,21 +326,19 @@ const username = ref(localStorage.getItem('username') || 'Admin')
 const componentListRef = ref(null)
 
 const activeMenu = ref('1-1')
-const currentView = ref('inventory')
-const isCollapse = ref(false)
+const currentView = ref(localStorage.getItem('currentView') || 'inventory')
+const menuDrawerVisible = ref(false)
 
-const toggleSidebar = () => {
-  isCollapse.value = !isCollapse.value
-}
+
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref(null)
 const form = ref({
-  id: null,
   productCode: '',
   source: '',
   brand: '',
+  category: '',
   model: '',
   package: '',
   name: '',
@@ -308,6 +350,7 @@ const rules = {
   productCode: [{ required: true, message: '请输入商品编号', trigger: 'blur' }],
   source: [{ required: true, message: '请选择购买渠道', trigger: 'change' }],
   brand: [{ required: true, message: '请输入品牌', trigger: 'blur' }],
+  category: [{ required: true, message: '请输入分类', trigger: 'blur' }],
   model: [{ required: true, message: '请输入厂家型号', trigger: 'blur' }],
   name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }]
 }
@@ -513,6 +556,9 @@ const handleMenuSelect = (index) => {
   currentView.value = viewMap[index] || 'components'
   activeMenu.value = index
   
+  // 存储当前视图到localStorage，以便刷新时保持
+  localStorage.setItem('currentView', currentView.value)
+  
   // 设置筛选条件
   if (filterMap[index] !== undefined) {
     filterType.value = filterMap[index]
@@ -636,19 +682,120 @@ const submitStockOut = async () => {
 
 const handleExport = async () => {
   try {
-    const res = await exportExcel()
-    const blob = new Blob([res], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    // 加载所有数据用于导出
+    loading.value = true
+    const res = await getComponents({
+      page: 1,
+      pageSize: 10000, // 请求足够多的数据
+      search: searchQuery.value
     })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'components.xlsx'
-    link.click()
-    window.URL.revokeObjectURL(url)
+    let allData = res.data || []
+    
+    // 清理数据中的空格
+    allData = allData.map(item => ({
+      ...item,
+      source: item.source ? item.source.trim() : '',
+      brand: item.brand ? item.brand.trim() : '',
+      package: item.package ? item.package.trim() : '',
+      model: item.model ? item.model.trim() : ''
+    }))
+    
+    // 根据过滤条件过滤数据
+    if (filterType.value) {
+      allData = filterData(allData, filterType.value)
+    }
+    
+    // 根据封装筛选
+    if (packageFilter.value) {
+      allData = allData.filter(item => item.package === packageFilter.value)
+    }
+    
+    // 根据表格列筛选
+    if (Object.keys(tableFilters.value).length > 0) {
+      Object.entries(tableFilters.value).forEach(([key, values]) => {
+        if (Array.isArray(values) && values.length > 0) {
+          switch (key) {
+            case 'productCode':
+              // 商品编号筛选
+              allData = allData.filter(item => item.productCode.toUpperCase().startsWith(values[0]))
+              break
+            case 'source':
+            case 'brand':
+            case 'package':
+              // 下拉菜单筛选
+              allData = allData.filter(item => values.includes(item[key]))
+              break
+            case 'model':
+              // 文本筛选
+              allData = allData.filter(item => {
+                const value = item[key]
+                return values.some(val => value && value.toLowerCase().includes(val.toLowerCase()))
+              })
+              break
+          }
+        }
+      })
+    }
+    
+    // 准备导出数据
+    const exportData = allData.map((item, index) => {
+      return {
+        序号: index + 1,
+        编号: item.productCode || '',
+        渠道: item.source === 'LCSC' ? '立创商城' : item.source === 'TB' ? '淘宝' : '',
+        品牌: item.brand || '',
+        型号: item.model || '',
+        封装: item.package || '',
+        商品: item.name || '',
+        数量: item.quantity || 0,
+        库存: item.currentStock || 0,
+        总价: item.price ? item.price.toFixed(2) : '0.00',
+        单价: item.quantity > 0 ? (item.price / item.quantity).toFixed(2) : '0.00'
+      }
+    })
+    
+    // 创建工作簿和工作表
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.json_to_sheet(exportData)
+    
+    // 设置列宽
+    const columnWidths = [
+      { wch: 8 },  // 序号
+      { wch: 12 }, // 编号
+      { wch: 10 }, // 渠道
+      { wch: 8 },  // 品牌
+      { wch: 12 }, // 型号
+      { wch: 8 },  // 封装
+      { wch: 30 }, // 商品
+      { wch: 8 },  // 数量
+      { wch: 7 },  // 库存
+      { wch: 8 },  // 总价
+      { wch: 8 }   // 单价
+    ]
+    ws['!cols'] = columnWidths
+    
+    // 将工作表添加到工作簿
+    XLSX.utils.book_append_sheet(wb, ws, '元件清单')
+    
+    // 生成当前时间字符串，格式为：YYYY-MM-DD HH-mm
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const timeString = `${year}${month}${day}${hours}${minutes}`
+    
+    // 生成Excel文件并下载
+    XLSX.writeFile(wb, `元件清单-${timeString}.xlsx`)
+    
     ElMessage.success('导出成功')
   } catch (error) {
-    }
+    console.error('导出失败详情：', error)
+    ElMessage.error('导出失败：' + (error.message || '未知错误'))
+  } finally {
+    loading.value = false
+  }
 }
 
 const submitImport = async () => {
@@ -673,6 +820,22 @@ const submitImport = async () => {
   }
 }
 
+// 跳转到BOM匹配页面
+const handleBOMMatch = () => {
+  currentView.value = 'bom'
+  activeMenu.value = '6'
+  // 存储当前视图到localStorage，以便刷新时保持
+  localStorage.setItem('currentView', currentView.value)
+}
+
+// 跳转到入库出库记录页面
+const handleStockRecords = () => {
+  currentView.value = 'stockRecords'
+  activeMenu.value = '7'
+  // 存储当前视图到localStorage，以便刷新时保持
+  localStorage.setItem('currentView', currentView.value)
+}
+
 const handleLogout = () => {
   ElMessageBox.confirm('确定要退出登录吗？', '提示', {
     confirmButtonText: '确定',
@@ -681,6 +844,7 @@ const handleLogout = () => {
   }).then(() => {
     localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('username')
+    localStorage.removeItem('currentView')
     ElMessage.success('已退出登录')
     setTimeout(() => {
       router.push('/login')
@@ -710,6 +874,14 @@ onMounted(() => {
   height: 60px;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+
+
 .logo {
   display: flex;
   align-items: center;
@@ -728,71 +900,83 @@ onMounted(() => {
   font-size: 14px;
 }
 
-.main-container {
-  display: flex;
-  height: calc(100vh - 60px);
-  position: relative;
-}
-
-.sidebar {
+/* 菜单抽屉样式 */
+:deep(.el-drawer__header) {
   background-color: #304156;
-  overflow-y: auto;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s ease;
+  color: white;
+  margin: 0;
+  padding: 20px;
+  border-bottom: 1px solid #404e65;
 }
 
-.toggle-btn-outer {
-  position: absolute;
-  top: 6px;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #304156;
-  background-color: transparent;
-  border: none;
-  transition: all 0.3s ease;
-  width: 50px;
-  height: 46px;
-  line-height: 46px;
+:deep(.el-drawer__title) {
+  color: white;
+  font-size: 20px;
+   text-align: center;
+  width: 100%;
+  font-weight: bold;
 }
 
-.toggle-btn-outer:hover {
-  color: #409EFF;
+:deep(.el-drawer__body) {
+  padding: 0;
+  background-color: #304156;
 }
 
-.sidebar .el-menu {
+:deep(.el-menu) {
   border-right: none;
+  background-color: #304156;
 }
 
-.sidebar .el-menu-item {
+:deep(.el-menu-item) {
   height: 50px;
   line-height: 50px;
+  
   color: #bfcbd9 !important;
 }
 
-.sidebar .el-menu-item:hover {
+:deep(.el-menu-item svg) {
+  margin-left: 45px;
+}
+
+:deep(.el-menu-item:hover) {
   background-color: #263445 !important;
   color: #fff !important;
 }
 
-.sidebar .el-menu-item.is-active {
+:deep(.el-menu-item.is-active) {
   background-color: #409EFF !important;
   color: #fff !important;
 }
 
-.sidebar .el-sub-menu .el-menu-item {
+:deep(.el-sub-menu .el-menu-item) {
   background-color: #1f2d3d !important;
 }
 
-.sidebar .el-sub-menu .el-menu-item:hover {
+:deep(.el-sub-menu .el-menu-item svg) {
+  margin-left: 45px;
+}
+
+:deep(.el-sub-menu .el-menu-item:hover) {
   background-color: #263445 !important;
   color: #fff !important;
 }
 
-.sidebar .el-sub-menu .el-menu-item.is-active {
+:deep(.el-sub-menu .el-menu-item.is-active) {
   background-color: #409EFF !important;
+  color: #fff !important;
+}
+
+:deep(.el-sub-menu__title) {
+  height: 50px;
+  line-height: 50px;
+}
+
+:deep(.el-sub-menu__title svg) {
+  margin-left: 45px;
+}
+
+:deep(.el-sub-menu__title:hover) {
+  background-color: #263445 !important;
   color: #fff !important;
 }
 
@@ -819,12 +1003,49 @@ onMounted(() => {
     display: none;
   }
   
+  .user-info .el-button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
   .main-container {
     flex-direction: column;
   }
   
   .sidebar {
     width: 100% !important;
+    height: auto;
+    max-height: 200px;
+  }
+  
+  .main-content {
+    padding: 10px;
+  }
+  
+  .toggle-btn-outer {
+    top: 2px;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .el-dialog {
+    width: 90% !important;
+    max-width: 90% !important;
+  }
+  
+  .el-form-item {
+    margin-bottom: 12px;
+  }
+  
+  .el-form-item__label {
+    font-size: 12px;
+    width: 80px;
+  }
+  
+  .el-input,
+  .el-select,
+  .el-input-number {
+    width: 100%;
   }
 }
 </style>
